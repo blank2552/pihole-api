@@ -22,6 +22,7 @@ func (c *Client) AddDNSEntry(hostname, address string) error {
         err := c.PutRequest(
                 endpoint,
                 nil,
+				nil,
         )
         if err != nil {
                 return err
