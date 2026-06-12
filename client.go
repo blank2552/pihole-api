@@ -57,7 +57,7 @@ func (c *Client) PostRequest(path string, body any, result any) error {
 		return err
 	}
 
-	req.Header.Set("Content-Type": "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
