@@ -28,7 +28,7 @@ func (c *Client) Auth(password string) error {
 		LoginRequest{
 			Password: password
 		},
-		&LoginResp
+		&LoginResp,
 	)
 	if err != nil {
 		return err
