@@ -10,7 +10,7 @@ const (
 )
 
 
-func (c *Client) AddDNSEntry(hostname, address string) error {
+func (c *Client) AddDNSEntry(address, hostname string) error {
         
 		endpoint := fmt.Sprintf(
 			DNSEndpoint+"/%s",
