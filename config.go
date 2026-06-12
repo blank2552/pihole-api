@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	DNSEndpoint		= "/config/dns/hosts"
+	DNSEndpoint		= "/config/dns.hosts"
 )
 
 
