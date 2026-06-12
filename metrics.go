@@ -25,5 +25,5 @@ func (c *Client) History() (*HistoryResponse, error) {
 		return nil, err
 	}
 
-	return Resp, nil
+	return &Resp, nil
 }
