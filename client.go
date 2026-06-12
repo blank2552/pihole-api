@@ -41,6 +41,12 @@ func (c *Client) GetRequest(path string, result any) error {
 		return err
 	}
 
+	req.Header.Set("Content-Type", "application/json")
+
+	if c.Sid != "" {
+		req.Header.Set("X-FTL-SID", c.Sid)
+	}
+
 	resp, err := c.Client.Do(req)
 	if err != nil {
 		return err
