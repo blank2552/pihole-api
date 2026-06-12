@@ -1,4 +1,4 @@
-package pihole-api
+package piholeapi
 
 import (
 	"encoding/json"
