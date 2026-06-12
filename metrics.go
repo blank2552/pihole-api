@@ -1,6 +1,6 @@
 package piholeapi
 
-func (c *Client) History() (any, error) {
+func (c *Client) Hist() (any, error) {
 	var Resp map[string]any
 
 	err := c.GetRequest(
