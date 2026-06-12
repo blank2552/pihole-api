@@ -10,7 +10,7 @@ type HistoryEntry struct {
 
 type HistoryResponse struct {
 	History []HistoryEntry `json:"history"`
-	Took int `json:"took"`
+	Took float64 `json:"took"`
 }
 
 
