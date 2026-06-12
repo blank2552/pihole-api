@@ -6,18 +6,18 @@ import (
 )
 
 const (
-	DNSEndpoint		= "/config/dns"
+	DNSEndpoint		= "/config/dns/hosts"
 )
 
 
-func (c *Client) AddDNSEntry(hostname string, address string) error {
+func (c *Client) AddDNSEntry(hostname, address string) error {
         
 		endpoint := fmt.Sprintf(
-			DNSEndpoint+"/hosts/%s",
+			DNSEndpoint+"%s",
 			url.PathEscape(address+" "+hostname),
 		) 
 
-		fmt.Println(endpoint)
+		fmt.Println(c.URL+endpoint)
 
         err := c.PutRequest(
                 DNSEndpoint+endpoint,
