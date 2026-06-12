@@ -2,6 +2,7 @@ package piholeapi
 
 import (
 	"fmt"
+	"net/url"
 )
 
 const (
@@ -21,7 +22,7 @@ func (c *Client) AddDNSEntry(hostname string, address string) error {
                 nil,
         )
         if err != nil {
-                return nil, err
+                return err
         }
 
         return nil
