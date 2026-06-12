@@ -97,3 +97,42 @@ func (c *Client) PostRequest(path string, body any, result any) error {
 
 	return nil
 }
+
+func (c *Client) PutRequest(path string, body any, result any) error {
+	data, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPut,
+		c.URL+path,
+		bytes.NewBuffer(data),
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	if c.Sid != "" {
+		req.Header.Set("X-FTL-SID", c.Sid)
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("api returned %s", resp.Status)
+	}
+
+	if result != nil {
+		return json.NewDecoder(resp.Body).Decode(result)
+	}
+
+	return nil
+}
+

@@ -17,9 +17,10 @@ func (c *Client) AddDNSEntry(hostname string, address string) error {
 			url.PathEscape(address+" "+hostname),
 		) 
 
-        err := c.GetRequest(
+        err := c.PutRequest(
                 endpoint,
                 nil,
+				nil,
         )
         if err != nil {
                 return err
