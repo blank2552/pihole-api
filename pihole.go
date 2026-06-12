@@ -34,7 +34,7 @@ func (c *Client) Auth(password string) error {
 		return err
 	}
 
-	c.Headers.Set("X-FTL-SID", LoginResp.Session.Sid)
+	c.Sid := LoginResp.Session.Sid
 
 	return nil
 }
