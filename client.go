@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"bytes"
+	"fmt"
 )
 
 type Client struct {
@@ -63,7 +64,7 @@ func (c *Client) PostRequest(path string, body any, result any) error {
 	if err != nil {
 		return err
 	}
-	defer Body.Close()
+	defer resp.Body.Close()
 	
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("api returned %s", resp.Status)
