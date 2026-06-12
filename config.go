@@ -17,6 +17,8 @@ func (c *Client) AddDNSEntry(hostname string, address string) error {
 			url.PathEscape(address+" "+hostname),
 		) 
 
+		fmt.Println(endpoint)
+
         err := c.PutRequest(
                 DNSEndpoint+endpoint,
                 nil,
