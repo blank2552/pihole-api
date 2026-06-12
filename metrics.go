@@ -21,7 +21,7 @@ type ClientsEntry struct {
 
 type ClientsHistoryEntry struct {
 	Timestamp int `json:"timestamp"`
-	Data map[any]int `json:"data"`
+	Data map[string]int `json:"data"`
 }
 
 type HistoryClientsResponse struct {
