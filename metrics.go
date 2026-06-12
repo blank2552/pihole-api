@@ -52,7 +52,7 @@ func (c *Client) HistoryClients(n int) (*HistoryClientsResponse, error) {
 		&Resp,
 	)
 	if err != nil {
-		return nil, error
+		return nil, err
 	}
 
 	return &Resp, nil
