@@ -11,5 +11,5 @@ func (c *Client) Hist() (any, error) {
 		return nil, err
 	}
 
-	return resp, nil
+	return Resp, nil
 }
