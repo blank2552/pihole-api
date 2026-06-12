@@ -71,7 +71,7 @@ func (c *Client) PostRequest(path string, body any, result any) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	if c.Sid != nil {
+	if c.Sid != "" {
 		req.Header.Set("X-FTL-SID", c.Sid)
 	}
 
