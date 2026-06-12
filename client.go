@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"bytes"
 	"fmt"
+	"crypto/tls"
 )
 
 type Client struct {
@@ -13,10 +14,20 @@ type Client struct {
 	Client *http.Client
 }
 
-func NewClient(url string) *Client {
+func NewClient(url string, verifyTLS bool) *Client {
+	tr := &http.Transport{}
+
+	if !verifyTLS {
+		tr.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
+	}
+
 	return &Client{
 		URL: url,
-		Client: &http.Client{},
+		Client: &http.Client{
+			Transport: tr,
+		},
 	}
 }
 
