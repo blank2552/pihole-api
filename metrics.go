@@ -14,7 +14,7 @@ type HistoryResponse struct {
 }
 
 
-func (c *Client) History() (any, error) {
+func (c *Client) History() (*HistoryResponse, error) {
 	var Resp HistoryResponse
 
 	err := c.GetRequest(
