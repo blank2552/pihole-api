@@ -1,5 +1,8 @@
 package piholeapi
 
+const (
+	AuthEndpoint	= "/auth"
+)
 
 type LoginRequest struct {
 	Password string `json:"password"`
@@ -24,7 +27,7 @@ func (c *Client) Auth(password string) error {
 	var LoginResp LoginResponse
 
 	err := c.PostRequest(
-		"/auth",
+		AuthEndpoint,
 		LoginRequest{
 			Password: password,
 		},
