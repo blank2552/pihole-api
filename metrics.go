@@ -8,7 +8,7 @@ func (c *Client) Hist() (any, error) {
 		&Resp,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return resp, nil
