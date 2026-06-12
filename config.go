@@ -20,7 +20,7 @@ func (c *Client) AddDNSEntry(hostname, address string) error {
 		fmt.Println(DNSEndpoint+endpoint)
 
         err := c.PutRequest(
-                DNSEndpoint+endpoint,
+                endpoint,
                 nil,
 				nil,
         )
