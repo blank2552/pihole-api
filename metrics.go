@@ -14,6 +14,22 @@ type HistoryResponse struct {
 }
 
 
+type ClientsEntry struct {
+	Name string `json:"name"`
+	Total int `json:"total"`
+}
+
+type ClientsHistoryEntry struct {
+	Timestamp int `json:"timestamp"`
+	Data map[any]int `json:"data"`
+}
+
+type HistoryClientsResponse struct {
+	Clients map[string]ClientsEntry `json:"clients"`
+	History []ClientsHistoryEntry `json:"history"`
+	Took float64 `json:"took"`
+}
+
 func (c *Client) History() (*HistoryResponse, error) {
 	var Resp HistoryResponse
 
@@ -23,6 +39,20 @@ func (c *Client) History() (*HistoryResponse, error) {
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	return &Resp, nil
+}
+
+func (c *Client) HistoryClients(n int) (*HistoryClientsResponse, error) {
+	var Resp HistoryClientsResponse
+
+	err := c.GetRequest(
+		"/history/clients",
+		&Resp,
+	)
+	if err != nil {
+		return nil, error
 	}
 
 	return &Resp, nil
