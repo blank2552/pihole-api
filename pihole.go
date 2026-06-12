@@ -26,7 +26,7 @@ func (c *Client) Auth(password string) error {
 	err := c.PostRequest(
 		"/auth",
 		LoginRequest{
-			Password: password
+			Password: password,
 		},
 		&LoginResp,
 	)
