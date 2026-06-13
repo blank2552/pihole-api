@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	AuthEndpoint = "/auth"
+	authEndpoint = "/auth"
 )
 
 type LoginRequest struct {
@@ -15,9 +15,9 @@ type LoginRequest struct {
 
 type LoginSession struct {
 	Valid    bool   `json:"valid"`
-	Totp     bool   `json:"totp"`
-	Sid      string `json:"sid"`
-	Csrf     string `json:"csrf"`
+	TOTP     bool   `json:"totp"`
+	SID      string `json:"sid"`
+	CSRF     string `json:"csrf"`
 	Validity int    `json:"validity"`
 	Message  string `json:"message"`
 }
@@ -27,22 +27,22 @@ type LoginResponse struct {
 	Took    float64      `json:"took"`
 }
 
-func (c *Client) Auth(password string) error {
-	var LoginResp LoginResponse
+func (c *Client) Login(password string) error {
+	var loginResp LoginResponse
 
-	err := c.PostRequest(
-		AuthEndpoint,
+	err := c.post(
+		authEndpoint,
 		LoginRequest{
 			Password: password,
 		},
-		&LoginResp,
+		&loginResp,
 	)
 	if err != nil {
 		return err
 	}
 
-	session := LoginResp.Session
-	if session.Totp {
+	session := loginResp.Session
+	if session.TOTP {
 		if session.Message != "" {
 			return fmt.Errorf("authentication requires TOTP: %s", session.Message)
 		}
@@ -58,11 +58,11 @@ func (c *Client) Auth(password string) error {
 		return errors.New("authentication failed")
 	}
 
-	if session.Sid == "" {
+	if session.SID == "" {
 		return errors.New("authentication failed: missing session ID")
 	}
 
-	c.Sid = session.Sid
+	c.SID = session.SID
 
 	return nil
 }

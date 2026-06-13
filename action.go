@@ -1,12 +1,12 @@
 package piholeapi
 
 const (
-	GravityEndpoint		= "/action/gravity"
+	gravityEndpoint = "/action/gravity"
 )
 
 func (c *Client) UpdateGravity() error {
-	err := c.PostRequest(
-		GravityEndpoint,
+	err := c.post(
+		gravityEndpoint,
 		nil,
 		nil,
 	)

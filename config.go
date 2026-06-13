@@ -6,25 +6,24 @@ import (
 )
 
 const (
-	DNSEndpoint		= "/config/dns/hosts"
+	dnsEndpoint = "/config/dns/hosts"
 )
 
-
 func (c *Client) AddDNSEntry(address, hostname string) error {
-        
-		endpoint := fmt.Sprintf(
-			DNSEndpoint+"/%s",
-			url.PathEscape(address+" "+hostname),
-		) 
 
-        err := c.PutRequest(
-                endpoint,
-                nil,
-				nil,
-        )
-        if err != nil {
-                return err
-        }
+	endpoint := fmt.Sprintf(
+		dnsEndpoint+"/%s",
+		url.PathEscape(address+" "+hostname),
+	)
 
-        return nil
+	err := c.put(
+		endpoint,
+		nil,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

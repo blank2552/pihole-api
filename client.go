@@ -10,12 +10,12 @@ import (
 )
 
 type Client struct {
-	URL    string
-	Sid    string
-	Client *http.Client
+	BaseURL    string
+	SID        string
+	HTTPClient *http.Client
 }
 
-func NewClient(url string, verifyTLS bool) *Client {
+func NewClient(baseURL string, verifyTLS bool) *Client {
 	tr := &http.Transport{}
 
 	if !verifyTLS {
@@ -25,22 +25,22 @@ func NewClient(url string, verifyTLS bool) *Client {
 	}
 
 	return &Client{
-		URL: url,
-		Client: &http.Client{
+		BaseURL: baseURL,
+		HTTPClient: &http.Client{
 			Transport: tr,
 		},
 	}
 }
 
-func (c *Client) GetRequest(path string, result any) error {
+func (c *Client) get(path string, result any) error {
 	return c.doRequest(http.MethodGet, path, nil, result)
 }
 
-func (c *Client) PostRequest(path string, body any, result any) error {
+func (c *Client) post(path string, body any, result any) error {
 	return c.doRequest(http.MethodPost, path, body, result)
 }
 
-func (c *Client) PutRequest(path string, body any, result any) error {
+func (c *Client) put(path string, body any, result any) error {
 	return c.doRequest(http.MethodPut, path, body, result)
 }
 
@@ -52,7 +52,7 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 
 	req, err := http.NewRequest(
 		method,
-		c.URL+path,
+		c.BaseURL+path,
 		requestBody,
 	)
 	if err != nil {
@@ -61,11 +61,11 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	if c.Sid != "" {
-		req.Header.Set("X-FTL-SID", c.Sid)
+	if c.SID != "" {
+		req.Header.Set("X-FTL-SID", c.SID)
 	}
 
-	resp, err := c.Client.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return err
 	}
