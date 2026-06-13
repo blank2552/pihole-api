@@ -31,4 +31,8 @@ go.work.sum
 # .idea/
 # .vscode/
 
-*~
+# vim undofiles
+*.un~
+.*.un~
+*.swp
+.*.swp

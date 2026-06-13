@@ -2,7 +2,7 @@
 
 Go client for the Pi-hole API.
 
-This package currently supports authentication, query history, adding local DNS host entries, and triggering a gravity update.
+This package currently supports authentication, query history, adding local DNS host entries, triggering a gravity update, and restarting DNS.
 
 ## Installation
 
@@ -34,6 +34,7 @@ The second `NewClient` argument controls TLS verification. Pass `false` only for
 - `GetHistory() (*HistoryResponse, error)`
 - `AddDNSEntry(address, hostname string) error`
 - `UpdateGravity() error`
+- `RestartDNS() error`
 
 ## Notes
 
