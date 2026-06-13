@@ -1,7 +1,6 @@
 package piholeapi
 
 import (
-	"fmt"
 	"net/url"
 )
 
@@ -16,8 +15,6 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 			DNSEndpoint+"/%s",
 			url.PathEscape(address+" "+hostname),
 		) 
-
-		fmt.Println(endpoint)
 
         err := c.PutRequest(
                 endpoint,
