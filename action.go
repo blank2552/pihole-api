@@ -1,7 +1,7 @@
 package piholeapi
 
 const (
-	GravityEndpoint		= "action/gravity"
+	GravityEndpoint		= "/action/gravity"
 )
 
 func (c *Client) UpdateGravity() error {
