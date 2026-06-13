@@ -1,6 +1,7 @@
 package piholeapi
 
 import (
+	"fmt"
 	"net/url"
 )
 
