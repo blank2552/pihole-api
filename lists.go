@@ -19,13 +19,15 @@ type ListsResponse struct {
 }
 
 func (c *Client) Lists() (*ListsResponse, error) {
+	var resp ListsResponse
+
 	err := c.get(
 		ListsEndpoint,
-		ListsResponse,
+		resp,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ListsResponse, nil
+	return &resp, nil
 }
