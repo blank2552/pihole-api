@@ -23,7 +23,7 @@ func (c *Client) Lists() (*ListsResponse, error) {
 
 	err := c.get(
 		ListsEndpoint,
-		resp,
+		&resp,
 	)
 	if err != nil {
 		return nil, err
