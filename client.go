@@ -1,16 +1,17 @@
 package piholeapi
 
 import (
-	"encoding/json"
-	"net/http"
 	"bytes"
-	"fmt"
 	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 )
 
 type Client struct {
-	URL string
-	Sid string
+	URL    string
+	Sid    string
 	Client *http.Client
 }
 
@@ -32,82 +33,27 @@ func NewClient(url string, verifyTLS bool) *Client {
 }
 
 func (c *Client) GetRequest(path string, result any) error {
-	req, err := http.NewRequest(
-		http.MethodGet,
-		c.URL+path,
-		nil,
-	)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	if c.Sid != "" {
-		req.Header.Set("X-FTL-SID", c.Sid)
-	}
-
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= 400 {
-		return fmt.Errorf("api returned %s", resp.Status)
-	}
-
-	return json.NewDecoder(resp.Body).Decode(result)
+	return c.doRequest(http.MethodGet, path, nil, result)
 }
 
 func (c *Client) PostRequest(path string, body any, result any) error {
-	data, err := json.Marshal(body)
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest(
-		http.MethodPost,
-		c.URL+path,
-		bytes.NewBuffer(data),
-	)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	if c.Sid != "" {
-		req.Header.Set("X-FTL-SID", c.Sid)
-	}
-
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	
-	if resp.StatusCode >= 400 {
-		return fmt.Errorf("api returned %s", resp.Status)
-	}
-
-	if result != nil {
-		return json.NewDecoder(resp.Body).Decode(result)
-	}
-
-	return nil
+	return c.doRequest(http.MethodPost, path, body, result)
 }
 
 func (c *Client) PutRequest(path string, body any, result any) error {
-	data, err := json.Marshal(body)
+	return c.doRequest(http.MethodPut, path, body, result)
+}
+
+func (c *Client) doRequest(method, path string, body any, result any) error {
+	requestBody, err := encodeRequestBody(body)
 	if err != nil {
 		return err
 	}
 
 	req, err := http.NewRequest(
-		http.MethodPut,
+		method,
 		c.URL+path,
-		bytes.NewBuffer(data),
+		requestBody,
 	)
 	if err != nil {
 		return err
@@ -124,7 +70,7 @@ func (c *Client) PutRequest(path string, body any, result any) error {
 		return err
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("api returned %s", resp.Status)
 	}
@@ -136,3 +82,15 @@ func (c *Client) PutRequest(path string, body any, result any) error {
 	return nil
 }
 
+func encodeRequestBody(body any) (io.Reader, error) {
+	if body == nil {
+		return nil, nil
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewBuffer(data), nil
+}
