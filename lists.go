@@ -1,10 +1,10 @@
 package piholeapi
 
 const (
-	ListsEndpoint = "/lists"
+	listsEndpoint = "/lists"
 )
 
-type ListObject struct {
+type ListEntry struct {
 	Address      string `json:"address"`
 	Comment      string `json:"comment"`
 	Groups       []int  `json:"groups"`
@@ -15,14 +15,28 @@ type ListObject struct {
 }
 
 type ListsResponse struct {
-	Lists []ListObject `json:"lists"`
+	Lists []ListEntry `json:"lists"`
 }
 
-func (c *Client) Lists() (*ListsResponse, error) {
+func (c *Client) GetLists() (*ListsResponse, error) {
 	var resp ListsResponse
 
 	err := c.get(
-		ListsEndpoint,
+		listsEndpoint,
+		&resp,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
+	var resp ListsResponse
+
+	err := c.get(
+		listsEndpoint+"/"+address,
 		&resp,
 	)
 	if err != nil {
