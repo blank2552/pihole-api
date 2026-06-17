@@ -14,7 +14,8 @@ type HostsConfigResponse struct {
 }
 
 type DNSConfigResponse struct {
-	DNS HostsConfigResponse `json:"dns"`
+	DNS       HostsConfigResponse `json:"dns"`
+	Upstreams []string            `json:"upstreams"`
 }
 
 type ConfigResponse struct {
