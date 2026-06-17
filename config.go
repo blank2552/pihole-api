@@ -9,18 +9,17 @@ const (
 	dnsEndpoint = "/config/dns/hosts"
 )
 
-type DNSConfigResponse struct {
-	Hosts            []string `json:"hosts"`
-	Upstreams        []string `json:"upstreams"`
-	CNAMEdeepInspect bool     `json:"CNAMEdeepInspect"`
+type DNSConfig struct {
+	Hosts     []string `json:"hosts,omitempty"`
+	Upstreams []string `json:"upstreams,omitempty"`
 }
 
-type PiholeConfigResponse struct {
-	DNS DNSConfigResponse `json:"dns"`
+type Config struct {
+	DNS DNSConfig `json:"dns"`
 }
 
-type ConfigResponse struct {
-	Config PiholeConfigResponse `json:"config"`
+type PiHoleConfigResponse struct {
+	Config Config `json:"config"`
 }
 
 func (c *Client) AddDNSEntry(address, hostname string) error {
@@ -42,8 +41,8 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 	return nil
 }
 
-func (c *Client) GetDNSEntries() (*ConfigResponse, error) {
-	var resp ConfigResponse
+func (c *Client) GetDNSEntries() (*PiHoleConfigResponse, error) {
+	var resp PiHoleConfigResponse
 
 	if err := c.get(
 		dnsEndpoint,
