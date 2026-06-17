@@ -40,11 +40,11 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 	return nil
 }
 
-func (c *Client) GetDNSEntries() (ConfigResponse, error) {
+func (c *Client) GetDNSEntries() (*ConfigResponse, error) {
 	var resp ConfigResponse
 
 	if err := c.get(
-		endpoint,
+		dnsEndpoint,
 		&resp,
 	); err != nil {
 		return nil, err
