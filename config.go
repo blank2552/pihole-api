@@ -10,8 +10,9 @@ const (
 )
 
 type DNSConfigResponse struct {
-	Hosts     []string `json:"hosts"`
-	Upstreams []string `json:"upstreams"`
+	Hosts            []string `json:"hosts"`
+	Upstreams        []string `json:"upstreams"`
+	CNAMEdeepInspect bool     `json:"CNAMEdeepInspect"`
 }
 
 type PiholeConfigResponse struct {
