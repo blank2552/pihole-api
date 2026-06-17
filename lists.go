@@ -18,6 +18,13 @@ type ListsResponse struct {
 	Lists []ListEntry `json:"lists"`
 }
 
+type ListCreate struct {
+	Address string `json:"address"`
+	Comment string `json:"comment"`
+	Groups  []int  `json:"groups"`
+	Enabled bool   `json:"enabled"`
+}
+
 func (c *Client) GetLists() (*ListsResponse, error) {
 	var resp ListsResponse
 
@@ -44,4 +51,17 @@ func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
 	}
 
 	return &resp, nil
+}
+
+func (c *Client) CreateList(l ListCreate) error {
+	err := c.post(
+		listsEndpoint+l.Address,
+		&l,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

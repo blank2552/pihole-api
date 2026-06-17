@@ -9,6 +9,18 @@ const (
 	dnsEndpoint = "/config/dns/hosts"
 )
 
+type HostsConfigResponse struct {
+	Hosts []string `json:"hosts"`
+}
+
+type DNSConfigResponse struct {
+	DNS HostsConfigResponse `json:"dns"`
+}
+
+type ConfigResponse struct {
+	Config DNSConfigResponse `json:"config"`
+}
+
 func (c *Client) AddDNSEntry(address, hostname string) error {
 
 	endpoint := fmt.Sprintf(
@@ -26,4 +38,17 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 	}
 
 	return nil
+}
+
+func (c *Client) GetDNSEntries() (ConfigResponse, error) {
+	var resp ConfigResponse
+
+	if err := c.get(
+		endpoint,
+		&resp,
+	); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
 }
