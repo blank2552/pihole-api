@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	dnsEndpoint = "/config/dns/hosts"
+	dnsEndpoint = "/config"
 )
 
 type DNSConfig struct {
