@@ -9,17 +9,17 @@ const (
 	dnsEndpoint = "/config/dns/hosts"
 )
 
-type HostsConfigResponse struct {
-	Hosts []string `json:"hosts"`
+type DNSConfigResponse struct {
+	Hosts     []string `json:"hosts"`
+	Upstreams []string `json:"upstreams"`
 }
 
-type DNSConfigResponse struct {
-	DNS       HostsConfigResponse `json:"dns"`
-	Upstreams []string            `json:"upstreams"`
+type PiholeConfigResponse struct {
+	DNS DNSConfigResponse `json:"dns"`
 }
 
 type ConfigResponse struct {
-	Config DNSConfigResponse `json:"config"`
+	Config PiholeConfigResponse `json:"config"`
 }
 
 func (c *Client) AddDNSEntry(address, hostname string) error {
