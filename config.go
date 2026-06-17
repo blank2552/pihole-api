@@ -11,7 +11,8 @@ const (
 )
 
 type DNSConfig struct {
-	Hosts []string `json:"hosts,omitempty"`
+	Hosts     []string `json:"hosts,omitempty"`
+	Upstreams []string `json:"upstreams,omitempty"`
 }
 
 type Config struct {
