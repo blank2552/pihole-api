@@ -55,6 +55,7 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 func (c *Client) AddUpstream(address string) error {
 	endpoint := ConfigEndpoint + "/dns/upstreams/" + address
 
+	fmt.Println(endpoint)
 	if err := c.put(
 		endpoint,
 		nil,
