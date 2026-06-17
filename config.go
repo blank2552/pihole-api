@@ -3,6 +3,7 @@ package piholeapi
 import (
 	"fmt"
 	"net/url"
+	"slices"
 )
 
 const (
@@ -10,8 +11,7 @@ const (
 )
 
 type DNSConfig struct {
-	Hosts     []string `json:"hosts,omitempty"`
-	Upstreams []string `json:"upstreams,omitzero"`
+	Hosts []string `json:"hosts,omitempty"`
 }
 
 type Config struct {
@@ -20,6 +20,17 @@ type Config struct {
 
 type PiHoleConfigResponse struct {
 	Config Config `json:"config"`
+}
+
+func (c *Client) DNSHostExists(ip, hostname string) (bool, error) {
+	cfg, err := c.GetDNSEntries()
+	if err != nil {
+		return false, err
+	}
+
+	want := ip + " " + hostname
+
+	return slices.Contains(cfg.Config.DNS.Hosts, want), nil
 }
 
 func (c *Client) AddDNSEntry(address, hostname string) error {
