@@ -76,6 +76,7 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 	}
 
 	if result != nil {
+		fmt.Println(json.NewDecoder(resp.Body).Decode(result))
 		return json.NewDecoder(resp.Body).Decode(result)
 	}
 
