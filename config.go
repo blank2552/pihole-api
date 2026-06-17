@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	dnsEndpoint = "/config"
+	ConfigEndpoint = "/config"
 )
 
 type DNSConfig struct {
@@ -24,20 +24,19 @@ type PiHoleConfigResponse struct {
 }
 
 func (c *Client) DNSHostExists(ip, hostname string) (bool, error) {
-	cfg, err := c.GetDNSEntries()
+	resp, err := c.GetPiholeConfig()
 	if err != nil {
 		return false, err
 	}
 
 	want := ip + " " + hostname
 
-	return slices.Contains(cfg.Config.DNS.Hosts, want), nil
+	return slices.Contains(resp.Config.DNS.Hosts, want), nil
 }
 
 func (c *Client) AddDNSEntry(address, hostname string) error {
-
 	endpoint := fmt.Sprintf(
-		dnsEndpoint+"/%s",
+		ConfigEndpoint+"/dns/hosts/%s",
 		url.PathEscape(address+" "+hostname),
 	)
 
@@ -53,11 +52,25 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 	return nil
 }
 
-func (c *Client) GetDNSEntries() (*PiHoleConfigResponse, error) {
+func (c *Client) AddUpstream(address string) error {
+	endpoint := ConfigEndpoint + "/dns/upstreams/" + address
+
+	if err := c.put(
+		endpoint,
+		nil,
+		nil,
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) GetPiholeConfig() (*PiHoleConfigResponse, error) {
 	var resp PiHoleConfigResponse
 
 	if err := c.get(
-		dnsEndpoint,
+		ConfigEndpoint,
 		&resp,
 	); err != nil {
 		return nil, err
