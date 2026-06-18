@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type Client struct {
@@ -25,7 +26,7 @@ func NewClient(baseURL string, verifyTLS bool) *Client {
 	}
 
 	return &Client{
-		BaseURL: baseURL,
+		BaseURL: strings.TrimRight(baseURL, "/"),
 		HTTPClient: &http.Client{
 			Transport: tr,
 		},
@@ -76,6 +77,16 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
+		data, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("api returned %s", resp.Status)
+		}
+
+		message := strings.TrimSpace(string(data))
+		if message != "" {
+			return fmt.Errorf("api returned %s: %s", resp.Status, message)
+		}
+
 		return fmt.Errorf("api returned %s", resp.Status)
 	}
 

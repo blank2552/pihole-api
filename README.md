@@ -2,7 +2,7 @@
 
 Go client for the Pi-hole API.
 
-This package currently supports authentication, query history, adding local DNS host entries, triggering a gravity update, and restarting DNS.
+This package currently supports authentication, session listing, query history, local DNS configuration, list management, triggering a gravity update, and restarting DNS.
 
 ## Installation
 
@@ -31,8 +31,16 @@ The second `NewClient` argument controls TLS verification. Pass `false` only for
 
 - `NewClient(baseURL string, verifyTLS bool) *Client`
 - `Login(password string) error`
+- `Logout() error`
+- `ListSessions() (*AuthSessionsResponse, error)`
 - `GetHistory() (*HistoryResponse, error)`
+- `GetPiholeConfig() (*ConfigResponse, error)`
+- `DNSHostExists(address, hostname string) (bool, error)`
 - `AddDNSEntry(address, hostname string) error`
+- `AddUpstream(address string) error`
+- `GetLists() (*ListsResponse, error)`
+- `GetListsByAddress(address string) (*ListsResponse, error)`
+- `CreateList(l ListCreate) error`
 - `UpdateGravity() error`
 - `RestartDNS() error`
 

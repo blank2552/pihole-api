@@ -5,11 +5,11 @@ const (
 )
 
 type HistoryEntry struct {
-	Timestamp int `json:"timestamp"`
-	Total     int `json:"total"`
-	Cached    int `json:"cached"`
-	Blocked   int `json:"blocked"`
-	Forwarded int `json:"forwarded"`
+	Timestamp int64 `json:"timestamp"`
+	Total     int   `json:"total"`
+	Cached    int   `json:"cached"`
+	Blocked   int   `json:"blocked"`
+	Forwarded int   `json:"forwarded"`
 }
 
 type HistoryResponse struct {
@@ -20,11 +20,10 @@ type HistoryResponse struct {
 func (c *Client) GetHistory() (*HistoryResponse, error) {
 	var resp HistoryResponse
 
-	err := c.get(
+	if err := c.get(
 		historyEndpoint,
 		&resp,
-	)
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 

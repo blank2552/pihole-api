@@ -33,26 +33,28 @@ type authResponse struct {
 	Took    float64     `json:"took"`
 }
 
-type authCurrentSession struct {
-	ID             int  `json:"id"`
-	CurrentSession bool `json:"current_session"`
-	Valid          bool `json:"valid"`
-	TLS            struct {
-		Login bool `json:"login"`
-		Mixed bool `json:"mixed"`
-	} `json:"tls"`
-	APP        bool   `json:"app"`
-	CLI        bool   `json:"cli"`
-	LoginAt    int    `json:"login_at"`
-	LastActive int    `json:"last_active"`
-	ValidUntil int    `json:"valid_until"`
-	RemoteAddr string `json:"remote_addr"`
-	UserAgent  string `json:"user_agent,omitempty"`
-	XFF        string `json:"x_forwarded_for,omitempty"`
+type AuthSessionTLS struct {
+	Login bool `json:"login"`
+	Mixed bool `json:"mixed"`
 }
 
-type authListSessions struct {
-	Sessions []authCurrentSession `json:"sessions"`
+type AuthSessionInfo struct {
+	ID             int            `json:"id"`
+	CurrentSession bool           `json:"current_session"`
+	Valid          bool           `json:"valid"`
+	TLS            AuthSessionTLS `json:"tls"`
+	App            bool           `json:"app"`
+	CLI            bool           `json:"cli"`
+	LoginAt        int64          `json:"login_at"`
+	LastActive     int64          `json:"last_active"`
+	ValidUntil     int64          `json:"valid_until"`
+	RemoteAddr     string         `json:"remote_addr"`
+	UserAgent      string         `json:"user_agent,omitempty"`
+	XForwardedFor  string         `json:"x_forwarded_for,omitempty"`
+}
+
+type AuthSessionsResponse struct {
+	Sessions []AuthSessionInfo `json:"sessions"`
 }
 
 func (c *Client) Login(password string) error {
@@ -60,14 +62,13 @@ func (c *Client) Login(password string) error {
 
 	var loginResp authResponse
 
-	err := c.post(
+	if err := c.post(
 		authEndpoint,
 		authRequest{
 			Password: password,
 		},
 		&loginResp,
-	)
-	if err != nil {
+	); err != nil {
 		return err
 	}
 
@@ -111,8 +112,8 @@ func (c *Client) Logout() error {
 	return nil
 }
 
-func (c *Client) ListSessions() (*authListSessions, error) {
-	var resp authListSessions
+func (c *Client) ListSessions() (*AuthSessionsResponse, error) {
+	var resp AuthSessionsResponse
 
 	if err := c.get(
 		authEndpoint+"/sessions",

@@ -1,32 +1,15 @@
 package piholeapi
 
 const (
-	gravityEndpoint    = "/action/gravity"
-	restartDNSEndpoint = "/action/restartdns"
+	actionEndpoint     = "/action"
+	gravityEndpoint    = actionEndpoint + "/gravity"
+	restartDNSEndpoint = actionEndpoint + "/restartdns"
 )
 
 func (c *Client) UpdateGravity() error {
-	err := c.post(
-		gravityEndpoint,
-		nil,
-		nil,
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return c.post(gravityEndpoint, nil, nil)
 }
 
 func (c *Client) RestartDNS() error {
-	err := c.post(
-		restartDNSEndpoint,
-		nil,
-		nil,
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return c.post(restartDNSEndpoint, nil, nil)
 }

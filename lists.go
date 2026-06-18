@@ -1,5 +1,7 @@
 package piholeapi
 
+import "net/url"
+
 const (
 	listsEndpoint = "/lists"
 )
@@ -28,11 +30,10 @@ type ListCreate struct {
 func (c *Client) GetLists() (*ListsResponse, error) {
 	var resp ListsResponse
 
-	err := c.get(
+	if err := c.get(
 		listsEndpoint,
 		&resp,
-	)
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -42,11 +43,10 @@ func (c *Client) GetLists() (*ListsResponse, error) {
 func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
 	var resp ListsResponse
 
-	err := c.get(
-		listsEndpoint+"/"+address,
+	if err := c.get(
+		listsEndpoint+"/"+url.PathEscape(address),
 		&resp,
-	)
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -54,12 +54,11 @@ func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
 }
 
 func (c *Client) CreateList(l ListCreate) error {
-	err := c.post(
-		listsEndpoint+l.Address,
+	if err := c.post(
+		listsEndpoint+"/"+url.PathEscape(l.Address),
 		&l,
 		nil,
-	)
-	if err != nil {
+	); err != nil {
 		return err
 	}
 
