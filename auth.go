@@ -9,11 +9,17 @@ const (
 	authEndpoint = "/auth"
 )
 
-type LoginRequest struct {
+var (
+	ErrTOTPRequired         = errors.New("authentication requires TOTP")
+	ErrAuthenticationFailed = errors.New("authentication failed")
+	ErrMissingSessionID     = errors.New("authentication failed: missing session ID")
+)
+
+type authRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginSession struct {
+type authSession struct {
 	Valid    bool   `json:"valid"`
 	TOTP     bool   `json:"totp"`
 	SID      string `json:"sid"`
@@ -22,17 +28,41 @@ type LoginSession struct {
 	Message  string `json:"message"`
 }
 
-type LoginResponse struct {
-	Session LoginSession `json:"session"`
-	Took    float64      `json:"took"`
+type authResponse struct {
+	Session authSession `json:"session"`
+	Took    float64     `json:"took"`
+}
+
+type authCurrentSession struct {
+	ID             int  `json:"id"`
+	CurrentSession bool `json:"current_session"`
+	Valid          bool `json:"valid"`
+	TLS            struct {
+		Login string `json:"login"`
+		Mixed string `json:"mixed"`
+	} `json:"tls"`
+	APP        bool   `json:"app"`
+	CLI        bool   `json:"cli"`
+	LoginAt    int    `json:"login_at"`
+	LastActive int    `json:"last_active"`
+	ValidUntil int    `json:"valid_until"`
+	RemoteAddr string `json:"remote_addr"`
+	UserAgent  string `json:"user_agent,omitempty"`
+	XFF        string `json:"x_forwarded_for,omitempty"`
+}
+
+type authListSessions struct {
+	Sessions authCurrentSession `json:"sessions"`
 }
 
 func (c *Client) Login(password string) error {
-	var loginResp LoginResponse
+	c.SID = ""
+
+	var loginResp authResponse
 
 	err := c.post(
 		authEndpoint,
-		LoginRequest{
+		authRequest{
 			Password: password,
 		},
 		&loginResp,
@@ -44,22 +74,22 @@ func (c *Client) Login(password string) error {
 	session := loginResp.Session
 	if session.TOTP {
 		if session.Message != "" {
-			return fmt.Errorf("authentication requires TOTP: %s", session.Message)
+			return fmt.Errorf("%w: %s", ErrTOTPRequired, session.Message)
 		}
 
-		return errors.New("authentication requires TOTP")
+		return ErrTOTPRequired
 	}
 
 	if !session.Valid {
 		if session.Message != "" {
-			return fmt.Errorf("authentication failed: %s", session.Message)
+			return fmt.Errorf("%w: %s", ErrAuthenticationFailed, session.Message)
 		}
 
-		return errors.New("authentication failed")
+		return ErrAuthenticationFailed
 	}
 
 	if session.SID == "" {
-		return errors.New("authentication failed: missing session ID")
+		return ErrMissingSessionID
 	}
 
 	c.SID = session.SID
@@ -76,5 +106,21 @@ func (c *Client) Logout() error {
 		return err
 	}
 
+	c.SID = ""
+
 	return nil
+}
+
+func (c *Client) ListSessions() (ListSessions, error) {
+	var resp ListSessions
+
+	resp, err := c.get(
+		authEndpoint+"/sessions",
+		&resp,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
 }
