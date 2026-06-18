@@ -111,14 +111,13 @@ func (c *Client) Logout() error {
 	return nil
 }
 
-func (c *Client) ListSessions() (ListSessions, error) {
-	var resp ListSessions
+func (c *Client) ListSessions() (*authListSessions, error) {
+	var resp authListSessions
 
-	resp, err := c.get(
+	if err := c.get(
 		authEndpoint+"/sessions",
 		&resp,
-	)
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
