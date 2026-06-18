@@ -52,7 +52,7 @@ type authCurrentSession struct {
 }
 
 type authListSessions struct {
-	Sessions authCurrentSession `json:"sessions"`
+	Sessions []authCurrentSession `json:"sessions"`
 }
 
 func (c *Client) Login(password string) error {
