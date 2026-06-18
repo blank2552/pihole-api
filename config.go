@@ -17,7 +17,7 @@ type DNSConfig struct {
 
 type Config struct {
 	DNS  DNSConfig `json:"dns"`
-	Took int       `json:"took"`
+	Took float64   `json:"took"`
 }
 
 type PiHoleConfigResponse struct {
