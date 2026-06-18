@@ -38,8 +38,8 @@ type authCurrentSession struct {
 	CurrentSession bool `json:"current_session"`
 	Valid          bool `json:"valid"`
 	TLS            struct {
-		Login string `json:"login"`
-		Mixed string `json:"mixed"`
+		Login bool `json:"login"`
+		Mixed bool `json:"mixed"`
 	} `json:"tls"`
 	APP        bool   `json:"app"`
 	CLI        bool   `json:"cli"`
