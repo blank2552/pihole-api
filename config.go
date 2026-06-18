@@ -16,12 +16,12 @@ type DNSConfig struct {
 }
 
 type Config struct {
-	DNS  DNSConfig `json:"dns"`
-	Took float64   `json:"took"`
+	DNS DNSConfig `json:"dns"`
 }
 
 type PiHoleConfigResponse struct {
-	Config Config `json:"config"`
+	Config Config  `json:"config"`
+	Took   float64 `json:"took"`
 }
 
 func (c *Client) DNSHostExists(ip, hostname string) (bool, error) {
