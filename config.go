@@ -56,6 +56,23 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 	return nil
 }
 
+func (c *Client) DeleteDNSEntry(address, hostname string) error {
+	endpoint := fmt.Sprintf(
+		configEndpoint+"/dns/hosts/%s",
+		url.PathEscape(dnsHostEntry(address, hostname)),
+	)
+
+	if err := c.delete(
+		endpoint,
+		nil,
+		nil,
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) AddUpstream(address string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+"/dns/upstreams/%s",
