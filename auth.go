@@ -66,3 +66,15 @@ func (c *Client) Login(password string) error {
 
 	return nil
 }
+
+func (c *Client) Logout() error {
+	if err := c.delete(
+		authEndpoint,
+		nil,
+		nil,
+	); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -44,6 +44,10 @@ func (c *Client) put(path string, body any, result any) error {
 	return c.doRequest(http.MethodPut, path, body, result)
 }
 
+func (c *Client) delete(path string, body any, result any) error {
+	return c.doRequest(http.MethodDelete, path, body, result)
+}
+
 func (c *Client) doRequest(method, path string, body any, result any) error {
 	requestBody, err := encodeRequestBody(body)
 	if err != nil {
