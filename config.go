@@ -7,7 +7,9 @@ import (
 )
 
 const (
-	configEndpoint = "/config"
+	configEndpoint       = "/config"
+	dnsHostsEndpoint     = "/dns/hosts"
+	dnsUpstreamsEndpoint = "/dns/upstreams"
 )
 
 type DNSConfig struct {
@@ -41,53 +43,29 @@ func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
 
 func (c *Client) AddDNSEntry(address, hostname string) error {
 	endpoint := fmt.Sprintf(
-		configEndpoint+"/dns/hosts/%s",
+		configEndpoint+dnsHostsEndpoint+"%s",
 		url.PathEscape(dnsHostEntry(address, hostname)),
 	)
 
-	if err := c.put(
-		endpoint,
-		nil,
-		nil,
-	); err != nil {
-		return err
-	}
-
-	return nil
+	return c.put(endpoint, nil, nil)
 }
 
 func (c *Client) DeleteDNSEntry(address, hostname string) error {
 	endpoint := fmt.Sprintf(
-		configEndpoint+"/dns/hosts/%s",
+		configEndpoint+dnsHostsEndpoint+"%s",
 		url.PathEscape(dnsHostEntry(address, hostname)),
 	)
 
-	if err := c.delete(
-		endpoint,
-		nil,
-		nil,
-	); err != nil {
-		return err
-	}
-
-	return nil
+	return c.delete(endpoint, nil, nil)
 }
 
 func (c *Client) AddUpstream(address string) error {
 	endpoint := fmt.Sprintf(
-		configEndpoint+"/dns/upstreams/%s",
+		configEndpoint+dnsUpstreamsEndpoint+"%s",
 		url.PathEscape(address),
 	)
 
-	if err := c.put(
-		endpoint,
-		nil,
-		nil,
-	); err != nil {
-		return err
-	}
-
-	return nil
+	return c.put(endpoint, nil, nil)
 }
 
 func (c *Client) GetPiholeConfig() (*ConfigResponse, error) {
