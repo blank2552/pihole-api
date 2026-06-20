@@ -21,15 +21,17 @@ if err := client.Login("your-password"); err != nil {
 defer client.Logout()
 ```
 
+The base URL should include the Pi-hole API path, for example `https://pi.hole/api`
+
 ### Get lists
 
 ```go
-resp, err := client.GetLists()
+lists, err := client.GetLists()
 if err != nil {
     panic(err)
 }
 
-fmt.Printf("%+v", resp)
+fmt.Printf("%+v", lists)
 ```
 
 ### Update gravity
@@ -40,4 +42,15 @@ if err := client.UpdateGravity(); err != nil {
 }
 ```
 
-The base URL should include the Pi-hole API path, for example `https://pi.hole/api`.
+### Get history
+
+```go
+history, err := client.GetHistory()
+if err != nil {
+    panic(err)
+}
+
+for _, entry := range history.History {
+    fmt.Printf("%+v\n", entry)
+}
+```
