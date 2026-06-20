@@ -43,7 +43,7 @@ func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
 
 func (c *Client) AddDNSEntry(address, hostname string) error {
 	endpoint := fmt.Sprintf(
-		configEndpoint+dnsHostsEndpoint+"%s",
+		configEndpoint+dnsHostsEndpoint+"/%s",
 		url.PathEscape(dnsHostEntry(address, hostname)),
 	)
 
@@ -52,7 +52,7 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 
 func (c *Client) DeleteDNSEntry(address, hostname string) error {
 	endpoint := fmt.Sprintf(
-		configEndpoint+dnsHostsEndpoint+"%s",
+		configEndpoint+dnsHostsEndpoint+"/%s",
 		url.PathEscape(dnsHostEntry(address, hostname)),
 	)
 
@@ -61,7 +61,7 @@ func (c *Client) DeleteDNSEntry(address, hostname string) error {
 
 func (c *Client) AddUpstream(address string) error {
 	endpoint := fmt.Sprintf(
-		configEndpoint+dnsUpstreamsEndpoint+"%s",
+		configEndpoint+dnsUpstreamsEndpoint+"/%s",
 		url.PathEscape(address),
 	)
 
