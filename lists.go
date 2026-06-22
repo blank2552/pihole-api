@@ -7,22 +7,23 @@ const (
 )
 
 type ListEntry struct {
-	Address      string `json:"address"`
-	Comment      string `json:"comment"`
-	Groups       []int  `json:"groups"`
-	Enabled      bool   `json:"enabled"`
-	ID           int    `json:"id"`
-	DateAdded    int    `json:"date_added"`
-	DateModified int    `json:"date_modified"`
+	Address      string  `json:"address"`
+	Comment      *string `json:"comment,omitempty"`
+	Groups       []int   `json:"groups"`
+	Enabled      bool    `json:"enabled"`
+	ID           int     `json:"id"`
+	DateAdded    int     `json:"date_added"`
+	DateModified int     `json:"date_modified"`
 }
 
 type ListsResponse struct {
 	Lists []ListEntry `json:"lists"`
+	Took  int         `json:"took"`
 }
 
 type ListCreate struct {
 	Address string `json:"address"`
-	Comment string `json:"comment"`
+	Comment string `json:"comment,omitempty"`
 	Groups  []int  `json:"groups"`
 	Enabled bool   `json:"enabled"`
 }

@@ -49,8 +49,8 @@ type AuthSessionInfo struct {
 	LastActive     int64          `json:"last_active"`
 	ValidUntil     int64          `json:"valid_until"`
 	RemoteAddr     string         `json:"remote_addr"`
-	UserAgent      string         `json:"user_agent,omitempty"`
-	XForwardedFor  string         `json:"x_forwarded_for,omitempty"`
+	UserAgent      *string        `json:"user_agent,omitempty"`
+	XForwardedFor  *string        `json:"x_forwarded_for,omitempty"`
 }
 
 type AuthSessionsResponse struct {
