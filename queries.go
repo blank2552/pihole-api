@@ -5,12 +5,12 @@ const (
 )
 
 type client struct {
-	IP   string `json:"ip"`
-	Name string `json:"name,omitempty"`
+	IP   string  `json:"ip"`
+	Name *string `json:"name,omitempty"`
 }
 
 type reply struct {
-	Type string  `json:"type,omitempty"`
+	Type *string `json:"type,omitempty"`
 	Time float64 `json:"time"`
 }
 
@@ -20,18 +20,18 @@ type ede struct {
 }
 
 type queryEntry struct {
-	ID        int    `json:"id"`
-	Timestamp int64  `json:"timestamp"`
-	Type      string `json:"type"`
-	Domain    string `json:"domain"`
-	CNAME     string `json:"cname,omitempty"`
-	Status    string `json:"status,omitempty"`
-	Client    client `json:"client"`
-	DNSSEC    string `json:"dnssec"`
-	Reply     reply  `json:"reply"`
-	ListID    int    `json:"list_id,omitempty"`
-	Upstream  string `json:"upstream,omitempty"`
-	Ede       ede    `json:"ede"`
+	ID        int     `json:"id"`
+	Timestamp *int64  `json:"timestamp"`
+	Type      string  `json:"type"`
+	Domain    string  `json:"domain"`
+	CNAME     *string `json:"cname,omitempty"`
+	Status    *string `json:"status,omitempty"`
+	Client    client  `json:"client"`
+	DNSSEC    string  `json:"dnssec"`
+	Reply     reply   `json:"reply"`
+	ListID    *int    `json:"list_id,omitempty"`
+	Upstream  *string `json:"upstream,omitempty"`
+	Ede       ede     `json:"ede"`
 }
 
 type queriesResponse struct {
