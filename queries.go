@@ -11,7 +11,7 @@ type client struct {
 
 type reply struct {
 	Type string `json:"type"`
-	Time int64  `json:"time"`
+	Time int    `json:"time"`
 }
 
 type ede struct {
