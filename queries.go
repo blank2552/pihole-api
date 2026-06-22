@@ -15,8 +15,8 @@ type reply struct {
 }
 
 type ede struct {
-	Code int    `json:"code"`
-	Text string `json:"text,omitempty"`
+	Code int     `json:"code"`
+	Text *string `json:"text,omitempty"`
 }
 
 type queryEntry struct {
