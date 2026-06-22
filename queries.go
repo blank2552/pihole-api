@@ -23,8 +23,8 @@ type queryEntry struct {
 	ID        int    `json:"id"`
 	Timestamp int64  `json:"timestamp"`
 	Type      string `json:"type"`
-	Domain    int    `json:"domain"`
-	CNAME     int    `json:"cname"`
+	Domain    string `json:"domain"`
+	CNAME     string `json:"cname"`
 	Status    string `json:"status"`
 	Client    client `json:"client"`
 	DNSSEC    string `json:"dnssec"`
