@@ -10,8 +10,8 @@ type client struct {
 }
 
 type reply struct {
-	Type string `json:"type"`
-	Time int    `json:"time"`
+	Type string  `json:"type"`
+	Time float64 `json:"time"`
 }
 
 type ede struct {
