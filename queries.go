@@ -35,8 +35,14 @@ type queryEntry struct {
 }
 
 type queriesResponse struct {
-	Queries []queryEntry `json:"queries"`
-	Took    float64      `json:"took"`
+	Queries               []queryEntry `json:"queries"`
+	Cursor                int          `json:"cursor"`
+	RecordsTotal          int          `json:"recordsTotal"`
+	RecordsFiltered       int          `json:"recordsFiltered"`
+	Draw                  int          `json:"draw"`
+	EarliestTimestamp     int64        `json:"earliest_timestamp"`
+	EarliestTimestampDisk int64        `json:"earliest_timestamp_disk"`
+	Took                  float64      `json:"took"`
 }
 
 func (c *Client) GetQueries() (*queriesResponse, error) {
