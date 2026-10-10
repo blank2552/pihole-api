@@ -6,7 +6,7 @@ Go client for the Pi-hole API.
 ## Installation
 
 ```sh
-go get codeberg.org/blank2552/go-pihole-api-client
+go get github.com/blank2552/pihole-api
 ```
 
 ## Example usage
