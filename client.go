@@ -8,29 +8,47 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 )
 
 type Client struct {
-	BaseURL    string
-	SID        string
+	baseURL    string
+	sidMu      sync.RWMutex
+	sid        string
 	HTTPClient *http.Client
 }
 
 func NewClient(baseURL string, verifyTLS bool) *Client {
-	tr := &http.Transport{}
+	tr := http.DefaultTransport.(*http.Transport).Clone()
 
 	if !verifyTLS {
 		tr.TLSClientConfig = &tls.Config{
-			InsecureSkipVerify: true,
+			InsecureSkipVerify: true, //nolint:gosec -- explicitly requested by caller
 		}
 	}
 
 	return &Client{
-		BaseURL: strings.TrimRight(baseURL, "/"),
+		baseURL: strings.TrimRight(baseURL, "/"),
 		HTTPClient: &http.Client{
 			Transport: tr,
+			Timeout:   30 * time.Second,
 		},
 	}
+}
+
+func (c *Client) sessionID() string {
+	c.sidMu.RLock()
+	defer c.sidMu.RUnlock()
+
+	return c.sid
+}
+
+func (c *Client) setSessionID(sid string) {
+	c.sidMu.Lock()
+	defer c.sidMu.Unlock()
+
+	c.sid = sid
 }
 
 func (c *Client) get(path string, result any) error {
@@ -57,7 +75,7 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 
 	req, err := http.NewRequest(
 		method,
-		c.BaseURL+path,
+		c.baseURL+path,
 		requestBody,
 	)
 	if err != nil {
@@ -66,8 +84,8 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	if c.SID != "" {
-		req.Header.Set("X-FTL-SID", c.SID)
+	if sid := c.sessionID(); sid != "" {
+		req.Header.Set("X-FTL-SID", sid)
 	}
 
 	resp, err := c.HTTPClient.Do(req)

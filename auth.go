@@ -58,7 +58,7 @@ type AuthSessionsResponse struct {
 }
 
 func (c *Client) Login(password string) error {
-	c.SID = ""
+	c.setSessionID("")
 
 	var loginResp authResponse
 
@@ -93,7 +93,7 @@ func (c *Client) Login(password string) error {
 		return ErrMissingSessionID
 	}
 
-	c.SID = session.SID
+	c.setSessionID(session.SID)
 
 	return nil
 }
@@ -107,7 +107,7 @@ func (c *Client) Logout() error {
 		return err
 	}
 
-	c.SID = ""
+	c.setSessionID("")
 
 	return nil
 }
