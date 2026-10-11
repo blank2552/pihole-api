@@ -6,6 +6,7 @@ const (
 	listsEndpoint = "/lists"
 )
 
+// ListEntry describes an entry in a Pi-hole domain list.
 type ListEntry struct {
 	Address      string  `json:"address"`
 	Comment      *string `json:"comment,omitempty"`
@@ -16,11 +17,13 @@ type ListEntry struct {
 	DateModified int64   `json:"date_modified"`
 }
 
+// ListsResponse contains Pi-hole domain-list entries.
 type ListsResponse struct {
 	Lists []ListEntry `json:"lists"`
 	Took  float64     `json:"took"`
 }
 
+// ListCreate contains the values used to create a Pi-hole domain-list entry.
 type ListCreate struct {
 	Address string `json:"address"`
 	Comment string `json:"comment,omitempty"`
@@ -28,6 +31,7 @@ type ListCreate struct {
 	Enabled bool   `json:"enabled"`
 }
 
+// GetLists returns all Pi-hole domain-list entries.
 func (c *Client) GetLists() (*ListsResponse, error) {
 	var resp ListsResponse
 
@@ -41,6 +45,7 @@ func (c *Client) GetLists() (*ListsResponse, error) {
 	return &resp, nil
 }
 
+// GetListsByAddress returns Pi-hole domain-list entries matching address.
 func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
 	var resp ListsResponse
 
@@ -54,6 +59,7 @@ func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
 	return &resp, nil
 }
 
+// CreateList creates a Pi-hole domain-list entry.
 func (c *Client) CreateList(l ListCreate) error {
 	if err := c.post(
 		listsEndpoint+"/"+url.PathEscape(l.Address),

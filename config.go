@@ -12,15 +12,18 @@ const (
 	dnsUpstreamsEndpoint = "/dns/upstreams"
 )
 
+// DNSConfig contains Pi-hole's custom DNS hosts and upstream resolvers.
 type DNSConfig struct {
 	Hosts     []string `json:"hosts,omitempty"`
 	Upstreams []string `json:"upstreams,omitempty"`
 }
 
+// Config contains the supported Pi-hole configuration sections.
 type Config struct {
 	DNS DNSConfig `json:"dns"`
 }
 
+// ConfigResponse contains Pi-hole's configuration response.
 type ConfigResponse struct {
 	Config Config  `json:"config"`
 	Took   float64 `json:"took"`
@@ -30,6 +33,7 @@ func dnsHostEntry(address, hostname string) string {
 	return address + " " + hostname
 }
 
+// DNSHostExists reports whether an exact address and hostname entry exists.
 func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
 	resp, err := c.GetPiholeConfig()
 	if err != nil {
@@ -41,6 +45,7 @@ func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
 	return slices.Contains(resp.Config.DNS.Hosts, want), nil
 }
 
+// AddDNSEntry adds an address and hostname entry to Pi-hole's custom DNS hosts.
 func (c *Client) AddDNSEntry(address, hostname string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsHostsEndpoint+"/%s",
@@ -50,6 +55,7 @@ func (c *Client) AddDNSEntry(address, hostname string) error {
 	return c.put(endpoint, nil, nil)
 }
 
+// DeleteDNSEntry removes an address and hostname entry from Pi-hole's custom DNS hosts.
 func (c *Client) DeleteDNSEntry(address, hostname string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsHostsEndpoint+"/%s",
@@ -59,6 +65,7 @@ func (c *Client) DeleteDNSEntry(address, hostname string) error {
 	return c.delete(endpoint, nil, nil)
 }
 
+// AddUpstream adds a DNS upstream resolver to Pi-hole's configuration.
 func (c *Client) AddUpstream(address string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsUpstreamsEndpoint+"/%s",
@@ -68,6 +75,7 @@ func (c *Client) AddUpstream(address string) error {
 	return c.put(endpoint, nil, nil)
 }
 
+// GetPiholeConfig returns Pi-hole's current configuration.
 func (c *Client) GetPiholeConfig() (*ConfigResponse, error) {
 	var resp ConfigResponse
 

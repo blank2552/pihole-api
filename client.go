@@ -13,13 +13,17 @@ import (
 	"time"
 )
 
+// Client is a client for the Pi-hole API.
 type Client struct {
-	baseURL    string
-	sidMu      sync.RWMutex
-	sid        string
+	baseURL string
+	sidMu   sync.RWMutex
+	sid     string
+	// HTTPClient performs API requests and may be replaced before first use.
 	HTTPClient *http.Client
 }
 
+// NewClient creates a Pi-hole API client for baseURL.
+// TLS certificate verification is disabled when verifyTLS is false.
 func NewClient(baseURL string, verifyTLS bool) *Client {
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 

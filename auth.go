@@ -10,9 +10,12 @@ const (
 )
 
 var (
-	ErrTOTPRequired         = errors.New("authentication requires TOTP")
+	// ErrTOTPRequired indicates that authentication requires a TOTP code.
+	ErrTOTPRequired = errors.New("authentication requires TOTP")
+	// ErrAuthenticationFailed indicates that Pi-hole rejected the credentials.
 	ErrAuthenticationFailed = errors.New("authentication failed")
-	ErrMissingSessionID     = errors.New("authentication failed: missing session ID")
+	// ErrMissingSessionID indicates that authentication succeeded without a session ID.
+	ErrMissingSessionID = errors.New("authentication failed: missing session ID")
 )
 
 type authRequest struct {
@@ -33,11 +36,13 @@ type authResponse struct {
 	Took    float64     `json:"took"`
 }
 
+// AuthSessionTLS describes the TLS properties of an authenticated session.
 type AuthSessionTLS struct {
 	Login bool `json:"login"`
 	Mixed bool `json:"mixed"`
 }
 
+// AuthSessionInfo describes an active Pi-hole API session.
 type AuthSessionInfo struct {
 	ID             int            `json:"id"`
 	CurrentSession bool           `json:"current_session"`
@@ -53,10 +58,12 @@ type AuthSessionInfo struct {
 	XForwardedFor  *string        `json:"x_forwarded_for,omitempty"`
 }
 
+// AuthSessionsResponse contains the active Pi-hole API sessions.
 type AuthSessionsResponse struct {
 	Sessions []AuthSessionInfo `json:"sessions"`
 }
 
+// Login authenticates with Pi-hole and stores the returned session ID.
 func (c *Client) Login(password string) error {
 	c.setSessionID("")
 
@@ -98,6 +105,7 @@ func (c *Client) Login(password string) error {
 	return nil
 }
 
+// Logout invalidates the current Pi-hole session and clears its session ID.
 func (c *Client) Logout() error {
 	if err := c.delete(
 		authEndpoint,
@@ -112,6 +120,7 @@ func (c *Client) Logout() error {
 	return nil
 }
 
+// ListSessions returns the active Pi-hole API sessions.
 func (c *Client) ListSessions() (*AuthSessionsResponse, error) {
 	var resp AuthSessionsResponse
 

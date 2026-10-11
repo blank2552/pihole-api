@@ -4,21 +4,25 @@ const (
 	queryEndpoint = "/queries"
 )
 
+// QueryClient identifies the client that issued a DNS query.
 type QueryClient struct {
 	IP   string  `json:"ip"`
 	Name *string `json:"name,omitempty"`
 }
 
+// QueryReply describes Pi-hole's reply to a DNS query.
 type QueryReply struct {
 	Type *string `json:"type,omitempty"`
 	Time float64 `json:"time"`
 }
 
+// QueryEDE contains extended DNS error information for a query.
 type QueryEDE struct {
 	Code int     `json:"code"`
 	Text *string `json:"text,omitempty"`
 }
 
+// QueryEntry describes a DNS query recorded by Pi-hole.
 type QueryEntry struct {
 	ID        int         `json:"id"`
 	Timestamp *int64      `json:"timestamp"`
@@ -34,6 +38,7 @@ type QueryEntry struct {
 	Ede       QueryEDE    `json:"ede"`
 }
 
+// QueriesResponse contains DNS query records and pagination metadata.
 type QueriesResponse struct {
 	Queries               []QueryEntry `json:"queries"`
 	Cursor                int          `json:"cursor"`
@@ -45,6 +50,7 @@ type QueriesResponse struct {
 	Took                  float64      `json:"took"`
 }
 
+// GetQueries returns DNS queries recorded by Pi-hole.
 func (c *Client) GetQueries() (*QueriesResponse, error) {
 	var resp QueriesResponse
 
