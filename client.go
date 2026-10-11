@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
 	"strings"
 	"sync"
@@ -94,22 +95,62 @@ func (c *Client) doRequest(method, path string, body any, result any) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
-		data, err := io.ReadAll(resp.Body)
+	const maxErrorBodyBytes = 64 * 1024
+
+	if resp.StatusCode >= http.StatusBadRequest {
+		data, err := io.ReadAll(
+			io.LimitReader(resp.Body, maxErrorBodyBytes),
+		)
 		if err != nil {
-			return fmt.Errorf("api returned %s", resp.Status)
+			return fmt.Errorf(
+				"read pihole api error response for %s %s: %w",
+				method,
+				path,
+				err,
+			)
 		}
 
-		message := strings.TrimSpace(string(data))
-		if message != "" {
-			return fmt.Errorf("api returned %s: %s", resp.Status, message)
+		return &APIError{
+			Method:     method,
+			Path:       path,
+			Status:     resp.Status,
+			StatusCode: resp.StatusCode,
+			Message:    strings.TrimSpace(string(data)),
 		}
-
-		return fmt.Errorf("api returned %s", resp.Status)
 	}
 
-	if result != nil {
-		return json.NewDecoder(resp.Body).Decode(result)
+	if result == nil {
+		return nil
+	}
+
+	contentType := resp.Header.Get("Content-Type")
+	mediaType, _, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		return fmt.Errorf(
+			"pihole API returned invalid content-type %q for %s %s: %w",
+			contentType,
+			method,
+			path,
+			err,
+		)
+	}
+
+	if mediaType != "application/json" {
+		return fmt.Errorf(
+			"pihole API returned unexpected content-type %q for %s %s",
+			contentType,
+			method,
+			path,
+		)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(result); err != nil {
+		return fmt.Errorf(
+			"decode pihole response for %s %s: %w",
+			method,
+			path,
+			err,
+		)
 	}
 
 	return nil
