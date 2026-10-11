@@ -1,3 +1,3 @@
-module codeberg.org/blank2552/go-pihole-api-client
+module github.com/blank2552/pihole-api
 
-go 1.26.2
+go 1.21
