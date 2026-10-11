@@ -12,13 +12,13 @@ type ListEntry struct {
 	Groups       []int   `json:"groups"`
 	Enabled      bool    `json:"enabled"`
 	ID           int     `json:"id"`
-	DateAdded    int     `json:"date_added"`
-	DateModified int     `json:"date_modified"`
+	DateAdded    int64   `json:"date_added"`
+	DateModified int64   `json:"date_modified"`
 }
 
 type ListsResponse struct {
 	Lists []ListEntry `json:"lists"`
-	Took  int         `json:"took"`
+	Took  float64     `json:"took"`
 }
 
 type ListCreate struct {

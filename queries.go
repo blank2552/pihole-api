@@ -4,38 +4,38 @@ const (
 	queryEndpoint = "/queries"
 )
 
-type client struct {
+type QueryClient struct {
 	IP   string  `json:"ip"`
 	Name *string `json:"name,omitempty"`
 }
 
-type reply struct {
+type QueryReply struct {
 	Type *string `json:"type,omitempty"`
 	Time float64 `json:"time"`
 }
 
-type ede struct {
+type QueryEDE struct {
 	Code int     `json:"code"`
 	Text *string `json:"text,omitempty"`
 }
 
-type queryEntry struct {
-	ID        int     `json:"id"`
-	Timestamp *int64  `json:"timestamp"`
-	Type      string  `json:"type"`
-	Domain    string  `json:"domain"`
-	CNAME     *string `json:"cname,omitempty"`
-	Status    *string `json:"status,omitempty"`
-	Client    client  `json:"client"`
-	DNSSEC    string  `json:"dnssec"`
-	Reply     reply   `json:"reply"`
-	ListID    *int    `json:"list_id,omitempty"`
-	Upstream  *string `json:"upstream,omitempty"`
-	Ede       ede     `json:"ede"`
+type QueryEntry struct {
+	ID        int         `json:"id"`
+	Timestamp *int64      `json:"timestamp"`
+	Type      string      `json:"type"`
+	Domain    string      `json:"domain"`
+	CNAME     *string     `json:"cname,omitempty"`
+	Status    *string     `json:"status,omitempty"`
+	Client    QueryClient `json:"client"`
+	DNSSEC    string      `json:"dnssec"`
+	Reply     QueryReply  `json:"reply"`
+	ListID    *int        `json:"list_id,omitempty"`
+	Upstream  *string     `json:"upstream,omitempty"`
+	Ede       QueryEDE    `json:"ede"`
 }
 
-type queriesResponse struct {
-	Queries               []queryEntry `json:"queries"`
+type QueriesResponse struct {
+	Queries               []QueryEntry `json:"queries"`
 	Cursor                int          `json:"cursor"`
 	RecordsTotal          int          `json:"recordsTotal"`
 	RecordsFiltered       int          `json:"recordsFiltered"`
@@ -45,8 +45,8 @@ type queriesResponse struct {
 	Took                  float64      `json:"took"`
 }
 
-func (c *Client) GetQueries() (*queriesResponse, error) {
-	var resp queriesResponse
+func (c *Client) GetQueries() (*QueriesResponse, error) {
+	var resp QueriesResponse
 
 	if err := c.get(
 		queryEndpoint,
