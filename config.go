@@ -35,7 +35,7 @@ func dnsHostEntry(address, hostname string) string {
 
 // DNSHostExists reports whether an exact address and hostname entry exists.
 func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
-	resp, err := c.GetPiholeConfig()
+	resp, err := c.GetConfig()
 	if err != nil {
 		return false, err
 	}
@@ -75,8 +75,8 @@ func (c *Client) AddUpstream(address string) error {
 	return c.put(endpoint, nil, nil)
 }
 
-// GetPiholeConfig returns Pi-hole's current configuration.
-func (c *Client) GetPiholeConfig() (*ConfigResponse, error) {
+// GetConfig returns Pi-hole's current configuration.
+func (c *Client) GetConfig() (*ConfigResponse, error) {
 	var resp ConfigResponse
 
 	if err := c.get(

@@ -23,16 +23,16 @@ type ListsResponse struct {
 	Took  float64     `json:"took"`
 }
 
-// ListCreate contains the values used to create a Pi-hole domain-list entry.
-type ListCreate struct {
+// CreateListEntryRequest contains the values used to create a Pi-hole domain-list entry.
+type CreateListEntryRequest struct {
 	Address string `json:"address"`
 	Comment string `json:"comment,omitempty"`
 	Groups  []int  `json:"groups"`
 	Enabled bool   `json:"enabled"`
 }
 
-// GetLists returns all Pi-hole domain-list entries.
-func (c *Client) GetLists() (*ListsResponse, error) {
+// GetListEntries returns all Pi-hole domain-list entries.
+func (c *Client) GetListEntries() (*ListsResponse, error) {
 	var resp ListsResponse
 
 	if err := c.get(
@@ -45,8 +45,8 @@ func (c *Client) GetLists() (*ListsResponse, error) {
 	return &resp, nil
 }
 
-// GetListsByAddress returns Pi-hole domain-list entries matching address.
-func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
+// GetListEntriesByAddress returns Pi-hole domain-list entries matching address.
+func (c *Client) GetListEntriesByAddress(address string) (*ListsResponse, error) {
 	var resp ListsResponse
 
 	if err := c.get(
@@ -59,8 +59,8 @@ func (c *Client) GetListsByAddress(address string) (*ListsResponse, error) {
 	return &resp, nil
 }
 
-// CreateList creates a Pi-hole domain-list entry.
-func (c *Client) CreateList(l ListCreate) error {
+// CreateListEntry creates a Pi-hole domain-list entry.
+func (c *Client) CreateListEntry(l CreateListEntryRequest) error {
 	if err := c.post(
 		listsEndpoint+"/"+url.PathEscape(l.Address),
 		&l,
