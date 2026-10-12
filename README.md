@@ -84,7 +84,7 @@ if err := client.Login(password); err != nil {
 | Actions | `UpdateGravity`, `RestartDNS` |
 | Configuration | `GetConfig`, `DNSHostExists`, `AddDNSEntry`, `DeleteDNSEntry`, `AddUpstream`, `DeleteUpstream` |
 | Domain lists | `GetListEntries`, `GetListEntriesByAddress`, `CreateListEntry`, `UpdateListEntry`, `DeleteListEntry` |
-| Statistics | `GetHistory`, `GetQueries` |
+| Statistics | `GetHistory`, `GetClientHistory`, `GetQueries` |
 
 ### Create a domain-list entry
 
