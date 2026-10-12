@@ -82,15 +82,16 @@ if err := client.Login(password); err != nil {
 | --- | --- |
 | Authentication | `Login`, `Logout`, `ListSessions` |
 | Actions | `UpdateGravity`, `RestartDNS` |
-| Configuration | `GetConfig`, `DNSHostExists`, `AddDNSEntry`, `DeleteDNSEntry`, `AddUpstream` |
-| Domain lists | `GetListEntries`, `GetListEntriesByAddress`, `CreateListEntry` |
+| Configuration | `GetConfig`, `DNSHostExists`, `AddDNSEntry`, `DeleteDNSEntry`, `AddUpstream`, `DeleteUpstream` |
+| Domain lists | `GetListEntries`, `GetListEntriesByAddress`, `CreateListEntry`, `UpdateListEntry`, `DeleteListEntry` |
 | Statistics | `GetHistory`, `GetQueries` |
 
 ### Create a domain-list entry
 
 ```go
-err := client.CreateListEntry(piholeapi.CreateListEntryRequest{
+	err := client.CreateListEntry(piholeapi.CreateListEntryRequest{
 	Address: "example.com",
+	Type:    "block",
 	Comment: "Example blocklist entry",
 	Groups:  []int{0},
 	Enabled: true,

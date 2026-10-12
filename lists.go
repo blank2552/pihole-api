@@ -9,6 +9,7 @@ const (
 // ListEntry describes an entry in a Pi-hole domain list.
 type ListEntry struct {
 	Address      string  `json:"address"`
+	Type         string  `json:"type"`
 	Comment      *string `json:"comment,omitempty"`
 	Groups       []int   `json:"groups"`
 	Enabled      bool    `json:"enabled"`
@@ -26,7 +27,17 @@ type ListsResponse struct {
 // CreateListEntryRequest contains the values used to create a Pi-hole domain-list entry.
 type CreateListEntryRequest struct {
 	Address string `json:"address"`
+	Type    string `json:"-"`
 	Comment string `json:"comment,omitempty"`
+	Groups  []int  `json:"groups"`
+	Enabled bool   `json:"enabled"`
+}
+
+// UpdateListEntryRequest contains the values used to replace a Pi-hole
+// domain-list entry.
+type UpdateListEntryRequest struct {
+	Type    string `json:"type"`
+	Comment string `json:"comment"`
 	Groups  []int  `json:"groups"`
 	Enabled bool   `json:"enabled"`
 }
@@ -61,8 +72,10 @@ func (c *Client) GetListEntriesByAddress(address string) (*ListsResponse, error)
 
 // CreateListEntry creates a Pi-hole domain-list entry.
 func (c *Client) CreateListEntry(l CreateListEntryRequest) error {
+	values := url.Values{"type": []string{l.Type}}
+
 	if err := c.post(
-		listsEndpoint+"/"+url.PathEscape(l.Address),
+		listsEndpoint+"?"+values.Encode(),
 		&l,
 		nil,
 	); err != nil {
@@ -70,4 +83,20 @@ func (c *Client) CreateListEntry(l CreateListEntryRequest) error {
 	}
 
 	return nil
+}
+
+// UpdateListEntry replaces a Pi-hole domain-list entry.
+func (c *Client) UpdateListEntry(address string, l UpdateListEntryRequest) error {
+	values := url.Values{"type": []string{l.Type}}
+	endpoint := listsEndpoint + "/" + url.PathEscape(address) + "?" + values.Encode()
+
+	return c.put(endpoint, &l, nil)
+}
+
+// DeleteListEntry removes a Pi-hole domain-list entry.
+func (c *Client) DeleteListEntry(address, listType string) error {
+	values := url.Values{"type": []string{listType}}
+	endpoint := listsEndpoint + "/" + url.PathEscape(address) + "?" + values.Encode()
+
+	return c.delete(endpoint, nil, nil)
 }

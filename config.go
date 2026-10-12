@@ -75,6 +75,16 @@ func (c *Client) AddUpstream(address string) error {
 	return c.put(endpoint, nil, nil)
 }
 
+// DeleteUpstream removes a DNS upstream resolver from Pi-hole's configuration.
+func (c *Client) DeleteUpstream(address string) error {
+	endpoint := fmt.Sprintf(
+		configEndpoint+dnsUpstreamsEndpoint+"/%s",
+		url.PathEscape(address),
+	)
+
+	return c.delete(endpoint, nil, nil)
+}
+
 // GetConfig returns Pi-hole's current configuration.
 func (c *Client) GetConfig() (*ConfigResponse, error) {
 	var resp ConfigResponse
