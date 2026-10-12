@@ -1,5 +1,11 @@
 package piholeapi
 
+import (
+	"net/url"
+	"strconv"
+	"time"
+)
+
 const (
 	queryEndpoint = "/queries"
 )
@@ -50,12 +56,72 @@ type QueriesResponse struct {
 	Took                  float64      `json:"took"`
 }
 
-// GetQueries returns DNS queries recorded by Pi-hole.
-func (c *Client) GetQueries() (*QueriesResponse, error) {
-	var resp QueriesResponse
+// QueryOptions contains optional filters and pagination values for querying
+// Pi-hole's DNS query log. Zero-valued fields use Pi-hole's defaults.
+type QueryOptions struct {
+	// From limits results to queries at or after this time.
+	From time.Time
+	// Until limits results to queries at or before this time.
+	Until time.Time
+	// Domain filters results by the queried domain.
+	Domain string
+	// ClientIP filters results by the requesting client's IP address.
+	ClientIP string
+	// ClientName filters results by the requesting client's hostname.
+	ClientName string
+	// Status filters results by Pi-hole query status.
+	Status string
+	// Length sets the maximum number of queries returned.
+	Length int
+	// Start sets the pagination offset.
+	Start int
+}
 
+// GetQueries returns DNS queries recorded by Pi-hole using opts as filters and
+// pagination values. Zero-valued options use Pi-hole's defaults.
+func (c *Client) GetQueries(opts QueryOptions) (*QueriesResponse, error) {
+	values := url.Values{}
+
+	if !opts.From.IsZero() {
+		values.Set("from", strconv.FormatInt(opts.From.Unix(), 10))
+	}
+
+	if !opts.Until.IsZero() {
+		values.Set("until", strconv.FormatInt(opts.Until.Unix(), 10))
+	}
+
+	if opts.Domain != "" {
+		values.Set("domain", opts.Domain)
+	}
+
+	if opts.ClientIP != "" {
+		values.Set("client_ip", opts.ClientIP)
+	}
+
+	if opts.ClientName != "" {
+		values.Set("client_name", opts.ClientName)
+	}
+
+	if opts.Status != "" {
+		values.Set("status", opts.Status)
+	}
+
+	if opts.Length > 0 {
+		values.Set("length", strconv.Itoa(opts.Length))
+	}
+
+	if opts.Start > 0 {
+		values.Set("start", strconv.Itoa(opts.Start))
+	}
+
+	endpoint := queryEndpoint
+	if encoded := values.Encode(); encoded != "" {
+		endpoint += "?" + encoded
+	}
+
+	var resp QueriesResponse
 	if err := c.get(
-		queryEndpoint,
+		endpoint,
 		&resp,
 	); err != nil {
 		return nil, err

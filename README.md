@@ -111,7 +111,6 @@ if err := client.UpdateGravity(); err != nil {
 ## Limitations
 
 - TOTP authentication is detected but cannot yet be completed by the client.
-- Query filtering and pagination options are not yet exposed.
 - Request-specific contexts are not yet supported.
 
 ## License
