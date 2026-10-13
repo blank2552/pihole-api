@@ -35,27 +35,35 @@ import (
 	piholeapi "github.com/blank2552/pihole-api"
 )
 
-func main() {
+func run() error {
 	ctx := context.Background()
 	client := piholeapi.NewClient("https://pi.hole/api", true)
 
 	if err := client.Login(ctx, "your-password"); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer func() {
-		if err := client.Logout(ctx); err != nil {
+		if err := client.Logout(context.Background()); err != nil {
 			log.Printf("logout: %v", err)
 		}
 	}()
 
 	history, err := client.GetHistory(ctx)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for _, entry := range history.History {
 		fmt.Printf("%+v\n", entry)
+	}
+
+	return nil
+}
+
+func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
 	}
 }
 ```
@@ -95,7 +103,7 @@ if err := client.Login(ctx, password); err != nil {
 
 ```go
 err := client.CreateListEntry(ctx, piholeapi.CreateListEntryRequest{
-	Address: "example.com",
+	Address: "https://example.com/blocklist.txt",
 	Type:    "block",
 	Comment: "Example blocklist entry",
 	Groups:  []int{0},
