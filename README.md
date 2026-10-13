@@ -2,6 +2,11 @@
 
 A Go client for the Pi-hole v6 REST API.
 
+## Status
+
+This is an initial release for Pi-hole v6. The API may change before v1.0.0,
+and automated testing against a live Pi-hole instance is not yet available.
+
 ## Requirements
 
 - Go 1.21 or newer
@@ -112,7 +117,13 @@ if err := client.UpdateGravity(ctx); err != nil {
 
 ## Limitations
 
-- TOTP authentication is detected but cannot yet be completed by the client.
+- TOTP authentication is not supported.
+- Compatibility may vary between Pi-hole FTL versions.
+
+## Security
+
+Set `verifyTLS` to `true` in normal use. Replacing `Client.HTTPClient` also
+replaces its default redirect protection.
 
 ## License
 
