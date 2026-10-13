@@ -1,6 +1,9 @@
 package piholeapi
 
-import "net/url"
+import (
+	"context"
+	"net/url"
+)
 
 const (
 	listsEndpoint = "/lists"
@@ -43,10 +46,11 @@ type UpdateListEntryRequest struct {
 }
 
 // GetListEntries returns all Pi-hole domain-list entries.
-func (c *Client) GetListEntries() (*ListsResponse, error) {
+func (c *Client) GetListEntries(ctx context.Context) (*ListsResponse, error) {
 	var resp ListsResponse
 
 	if err := c.get(
+		ctx,
 		listsEndpoint,
 		&resp,
 	); err != nil {
@@ -57,10 +61,11 @@ func (c *Client) GetListEntries() (*ListsResponse, error) {
 }
 
 // GetListEntriesByAddress returns Pi-hole domain-list entries matching address.
-func (c *Client) GetListEntriesByAddress(address string) (*ListsResponse, error) {
+func (c *Client) GetListEntriesByAddress(ctx context.Context, address string) (*ListsResponse, error) {
 	var resp ListsResponse
 
 	if err := c.get(
+		ctx,
 		listsEndpoint+"/"+url.PathEscape(address),
 		&resp,
 	); err != nil {
@@ -71,10 +76,11 @@ func (c *Client) GetListEntriesByAddress(address string) (*ListsResponse, error)
 }
 
 // CreateListEntry creates a Pi-hole domain-list entry.
-func (c *Client) CreateListEntry(l CreateListEntryRequest) error {
+func (c *Client) CreateListEntry(ctx context.Context, l CreateListEntryRequest) error {
 	values := url.Values{"type": []string{l.Type}}
 
 	if err := c.post(
+		ctx,
 		listsEndpoint+"?"+values.Encode(),
 		&l,
 		nil,
@@ -86,17 +92,27 @@ func (c *Client) CreateListEntry(l CreateListEntryRequest) error {
 }
 
 // UpdateListEntry replaces a Pi-hole domain-list entry.
-func (c *Client) UpdateListEntry(address string, l UpdateListEntryRequest) error {
+func (c *Client) UpdateListEntry(ctx context.Context, address string, l UpdateListEntryRequest) error {
 	values := url.Values{"type": []string{l.Type}}
 	endpoint := listsEndpoint + "/" + url.PathEscape(address) + "?" + values.Encode()
 
-	return c.put(endpoint, &l, nil)
+	return c.put(
+		ctx,
+		endpoint,
+		&l,
+		nil,
+	)
 }
 
 // DeleteListEntry removes a Pi-hole domain-list entry.
-func (c *Client) DeleteListEntry(address, listType string) error {
+func (c *Client) DeleteListEntry(ctx context.Context, address, listType string) error {
 	values := url.Values{"type": []string{listType}}
 	endpoint := listsEndpoint + "/" + url.PathEscape(address) + "?" + values.Encode()
 
-	return c.delete(endpoint, nil, nil)
+	return c.delete(
+		ctx,
+		endpoint,
+		nil,
+		nil,
+	)
 }

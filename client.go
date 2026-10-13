@@ -2,8 +2,10 @@ package piholeapi
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime"
@@ -13,11 +15,17 @@ import (
 	"time"
 )
 
+// ErrRedirectNotAllowed indicates that the Pi-hole API attempted to redirect a request.
+var ErrRedirectNotAllowed = errors.New("pihole API redirect not allowed")
+
 // Client is a client for the Pi-hole API.
 type Client struct {
 	baseURL string
-	sidMu   sync.RWMutex
-	sid     string
+
+	authMu sync.Mutex
+	sidMu  sync.RWMutex
+	sid    string
+
 	// HTTPClient performs API requests and may be replaced before first use.
 	HTTPClient *http.Client
 }
@@ -38,6 +46,12 @@ func NewClient(baseURL string, verifyTLS bool) *Client {
 		HTTPClient: &http.Client{
 			Transport: tr,
 			Timeout:   30 * time.Second,
+			CheckRedirect: func(
+				req *http.Request,
+				via []*http.Request,
+			) error {
+				return ErrRedirectNotAllowed
+			},
 		},
 	}
 }
@@ -56,29 +70,30 @@ func (c *Client) setSessionID(sid string) {
 	c.sid = sid
 }
 
-func (c *Client) get(path string, result any) error {
-	return c.doRequest(http.MethodGet, path, nil, result)
+func (c *Client) get(ctx context.Context, path string, result any) error {
+	return c.doRequest(ctx, http.MethodGet, path, nil, result)
 }
 
-func (c *Client) post(path string, body any, result any) error {
-	return c.doRequest(http.MethodPost, path, body, result)
+func (c *Client) post(ctx context.Context, path string, body any, result any) error {
+	return c.doRequest(ctx, http.MethodPost, path, body, result)
 }
 
-func (c *Client) put(path string, body any, result any) error {
-	return c.doRequest(http.MethodPut, path, body, result)
+func (c *Client) put(ctx context.Context, path string, body any, result any) error {
+	return c.doRequest(ctx, http.MethodPut, path, body, result)
 }
 
-func (c *Client) delete(path string, body any, result any) error {
-	return c.doRequest(http.MethodDelete, path, body, result)
+func (c *Client) delete(ctx context.Context, path string, body any, result any) error {
+	return c.doRequest(ctx, http.MethodDelete, path, body, result)
 }
 
-func (c *Client) doRequest(method, path string, body any, result any) error {
+func (c *Client) doRequest(ctx context.Context, method, path string, body any, result any) error {
 	requestBody, err := encodeRequestBody(body)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(
+	req, err := http.NewRequestWithContext(
+		ctx,
 		method,
 		c.baseURL+path,
 		requestBody,

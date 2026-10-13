@@ -9,11 +9,10 @@ A Go client for the Pi-hole v6 REST API.
 
 ## Installation
 
-The current development version has not been released as a new tag yet. Install
-it directly from `main`:
+Install the latest release:
 
 ```sh
-go get github.com/blank2552/pihole-api@main
+go get github.com/blank2552/pihole-api@v0.1.0
 ```
 
 ## Quick start
@@ -25,6 +24,7 @@ normal certificate verification.
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -32,19 +32,20 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	client := piholeapi.NewClient("https://pi.hole/api", true)
 
-	if err := client.Login("your-password"); err != nil {
+	if err := client.Login(ctx, "your-password"); err != nil {
 		log.Fatal(err)
 	}
 
 	defer func() {
-		if err := client.Logout(); err != nil {
+		if err := client.Logout(ctx); err != nil {
 			log.Printf("logout: %v", err)
 		}
 	}()
 
-	history, err := client.GetHistory()
+	history, err := client.GetHistory(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +64,7 @@ the status without parsing an error string:
 ```go
 var apiErr *piholeapi.APIError
 
-if err := client.Login(password); err != nil {
+if err := client.Login(ctx, password); err != nil {
 	if errors.As(err, &apiErr) {
 		log.Printf(
 			"Pi-hole returned HTTP %d: %s",
@@ -84,12 +85,12 @@ if err := client.Login(password); err != nil {
 | Actions | `UpdateGravity`, `RestartDNS` |
 | Configuration | `GetConfig`, `DNSHostExists`, `AddDNSEntry`, `DeleteDNSEntry`, `AddUpstream`, `DeleteUpstream` |
 | Domain lists | `GetListEntries`, `GetListEntriesByAddress`, `CreateListEntry`, `UpdateListEntry`, `DeleteListEntry` |
-| Statistics | `GetHistory`, `GetClientHistory`, `GetQueries` |
+| Statistics | `GetHistory`, `GetClientHistory`, `GetDatabaseHistory`, `GetQueries` |
 
 ### Create a domain-list entry
 
 ```go
-	err := client.CreateListEntry(piholeapi.CreateListEntryRequest{
+err := client.CreateListEntry(ctx, piholeapi.CreateListEntryRequest{
 	Address: "example.com",
 	Type:    "block",
 	Comment: "Example blocklist entry",
@@ -104,7 +105,7 @@ if err != nil {
 ### Update gravity
 
 ```go
-if err := client.UpdateGravity(); err != nil {
+if err := client.UpdateGravity(ctx); err != nil {
 	return err
 }
 ```
@@ -112,7 +113,6 @@ if err := client.UpdateGravity(); err != nil {
 ## Limitations
 
 - TOTP authentication is detected but cannot yet be completed by the client.
-- Request-specific contexts are not yet supported.
 
 ## License
 

@@ -1,6 +1,7 @@
 package piholeapi
 
 import (
+	"context"
 	"errors"
 	"fmt"
 )
@@ -16,6 +17,8 @@ var (
 	ErrAuthenticationFailed = errors.New("authentication failed")
 	// ErrMissingSessionID indicates that authentication succeeded without a session ID.
 	ErrMissingSessionID = errors.New("authentication failed: missing session ID")
+	// ErrAlreadyAuthenticated indicates that the client already has an active session.
+	ErrAlreadyAuthenticated = errors.New("client is already authenticated")
 )
 
 type authRequest struct {
@@ -64,12 +67,21 @@ type AuthSessionsResponse struct {
 }
 
 // Login authenticates with Pi-hole and stores the returned session ID.
-func (c *Client) Login(password string) error {
-	c.setSessionID("")
+func (c *Client) Login(ctx context.Context, password string) error {
+	c.authMu.Lock()
+	defer c.authMu.Unlock()
+
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	if c.sessionID() != "" {
+		return ErrAlreadyAuthenticated
+	}
 
 	var loginResp authResponse
-
 	if err := c.post(
+		ctx,
 		authEndpoint,
 		authRequest{
 			Password: password,
@@ -106,8 +118,12 @@ func (c *Client) Login(password string) error {
 }
 
 // Logout invalidates the current Pi-hole session and clears its session ID.
-func (c *Client) Logout() error {
+func (c *Client) Logout(ctx context.Context) error {
+	c.authMu.Lock()
+	defer c.authMu.Unlock()
+
 	if err := c.delete(
+		ctx,
 		authEndpoint,
 		nil,
 		nil,
@@ -121,10 +137,11 @@ func (c *Client) Logout() error {
 }
 
 // ListSessions returns the active Pi-hole API sessions.
-func (c *Client) ListSessions() (*AuthSessionsResponse, error) {
+func (c *Client) ListSessions(ctx context.Context) (*AuthSessionsResponse, error) {
 	var resp AuthSessionsResponse
 
 	if err := c.get(
+		ctx,
 		authEndpoint+"/sessions",
 		&resp,
 	); err != nil {

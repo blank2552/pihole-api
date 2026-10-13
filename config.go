@@ -1,6 +1,7 @@
 package piholeapi
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"slices"
@@ -34,8 +35,8 @@ func dnsHostEntry(address, hostname string) string {
 }
 
 // DNSHostExists reports whether an exact address and hostname entry exists.
-func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
-	resp, err := c.GetConfig()
+func (c *Client) DNSHostExists(ctx context.Context, address, hostname string) (bool, error) {
+	resp, err := c.GetConfig(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -46,50 +47,71 @@ func (c *Client) DNSHostExists(address, hostname string) (bool, error) {
 }
 
 // AddDNSEntry adds an address and hostname entry to Pi-hole's custom DNS hosts.
-func (c *Client) AddDNSEntry(address, hostname string) error {
+func (c *Client) AddDNSEntry(ctx context.Context, address, hostname string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsHostsEndpoint+"/%s",
 		url.PathEscape(dnsHostEntry(address, hostname)),
 	)
 
-	return c.put(endpoint, nil, nil)
+	return c.put(
+		ctx,
+		endpoint,
+		nil,
+		nil,
+	)
 }
 
 // DeleteDNSEntry removes an address and hostname entry from Pi-hole's custom DNS hosts.
-func (c *Client) DeleteDNSEntry(address, hostname string) error {
+func (c *Client) DeleteDNSEntry(ctx context.Context, address, hostname string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsHostsEndpoint+"/%s",
 		url.PathEscape(dnsHostEntry(address, hostname)),
 	)
 
-	return c.delete(endpoint, nil, nil)
+	return c.delete(
+		ctx,
+		endpoint,
+		nil,
+		nil,
+	)
 }
 
 // AddUpstream adds a DNS upstream resolver to Pi-hole's configuration.
-func (c *Client) AddUpstream(address string) error {
+func (c *Client) AddUpstream(ctx context.Context, address string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsUpstreamsEndpoint+"/%s",
 		url.PathEscape(address),
 	)
 
-	return c.put(endpoint, nil, nil)
+	return c.put(
+		ctx,
+		endpoint,
+		nil,
+		nil,
+	)
 }
 
 // DeleteUpstream removes a DNS upstream resolver from Pi-hole's configuration.
-func (c *Client) DeleteUpstream(address string) error {
+func (c *Client) DeleteUpstream(ctx context.Context, address string) error {
 	endpoint := fmt.Sprintf(
 		configEndpoint+dnsUpstreamsEndpoint+"/%s",
 		url.PathEscape(address),
 	)
 
-	return c.delete(endpoint, nil, nil)
+	return c.delete(
+		ctx,
+		endpoint,
+		nil,
+		nil,
+	)
 }
 
 // GetConfig returns Pi-hole's current configuration.
-func (c *Client) GetConfig() (*ConfigResponse, error) {
+func (c *Client) GetConfig(ctx context.Context) (*ConfigResponse, error) {
 	var resp ConfigResponse
 
 	if err := c.get(
+		ctx,
 		configEndpoint,
 		&resp,
 	); err != nil {

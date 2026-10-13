@@ -1,6 +1,7 @@
 package piholeapi
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -30,7 +31,7 @@ func TestGetClientHistory(t *testing.T) {
 		}, nil
 	})
 
-	resp, err := client.GetClientHistory()
+	resp, err := client.GetClientHistory(context.Background())
 	if err != nil {
 		t.Fatalf("GetClientHistory() error = %v", err)
 	}

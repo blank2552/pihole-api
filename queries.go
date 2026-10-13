@@ -1,6 +1,7 @@
 package piholeapi
 
 import (
+	"context"
 	"net/url"
 	"strconv"
 	"time"
@@ -79,7 +80,7 @@ type QueryOptions struct {
 
 // GetQueries returns DNS queries recorded by Pi-hole using opts as filters and
 // pagination values. Zero-valued options use Pi-hole's defaults.
-func (c *Client) GetQueries(opts QueryOptions) (*QueriesResponse, error) {
+func (c *Client) GetQueries(ctx context.Context, opts QueryOptions) (*QueriesResponse, error) {
 	values := url.Values{}
 
 	if !opts.From.IsZero() {
@@ -121,6 +122,7 @@ func (c *Client) GetQueries(opts QueryOptions) (*QueriesResponse, error) {
 
 	var resp QueriesResponse
 	if err := c.get(
+		ctx,
 		endpoint,
 		&resp,
 	); err != nil {

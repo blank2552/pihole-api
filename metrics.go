@@ -1,6 +1,7 @@
 package piholeapi
 
 import (
+	"context"
 	"net/url"
 	"strconv"
 	"time"
@@ -39,7 +40,8 @@ type ClientHistoryEntry struct {
 	Data      map[string]int `json:"data"`
 }
 
-// DatabaseHistoryEntry
+// DatabaseHistoryEntry contains aggregate DNS query counts from Pi-hole's
+// long-term database for a point in time.
 type DatabaseHistoryEntry struct {
 	Timestamp int64 `json:"timestamp"`
 	Total     int   `json:"total"`
@@ -48,18 +50,20 @@ type DatabaseHistoryEntry struct {
 	Forwarded int   `json:"forwarded"`
 }
 
-// DatabaseHistoryResponse contains Pi-hole's Database query history.
+// DatabaseHistoryResponse contains Pi-hole's long-term DNS query history.
 type DatabaseHistoryResponse struct {
 	History []DatabaseHistoryEntry `json:"history"`
 	Took    float64                `json:"took"`
 }
 
+// DatabaseHistoryOptions contains the time range used to query long-term DNS
+// history. Zero-valued fields use Pi-hole's defaults.
 type DatabaseHistoryOptions struct {
 	// From limits results from this time.
-	From time.Time `json:"time"`
+	From time.Time
 
 	// Until limits results until this time.
-	Until time.Time `json:"until"`
+	Until time.Time
 }
 
 // ClientHistoryResponse contains DNS query history grouped by client. Client
@@ -71,10 +75,11 @@ type ClientHistoryResponse struct {
 }
 
 // GetHistory returns Pi-hole's aggregate DNS query history.
-func (c *Client) GetHistory() (*HistoryResponse, error) {
+func (c *Client) GetHistory(ctx context.Context) (*HistoryResponse, error) {
 	var resp HistoryResponse
 
 	if err := c.get(
+		ctx,
 		historyEndpoint,
 		&resp,
 	); err != nil {
@@ -85,10 +90,11 @@ func (c *Client) GetHistory() (*HistoryResponse, error) {
 }
 
 // GetClientHistory returns Pi-hole's DNS query history grouped by client.
-func (c *Client) GetClientHistory() (*ClientHistoryResponse, error) {
+func (c *Client) GetClientHistory(ctx context.Context) (*ClientHistoryResponse, error) {
 	var resp ClientHistoryResponse
 
 	if err := c.get(
+		ctx,
 		clientHistoryEndpoint,
 		&resp,
 	); err != nil {
@@ -98,17 +104,31 @@ func (c *Client) GetClientHistory() (*ClientHistoryResponse, error) {
 	return &resp, nil
 }
 
+// GetDatabaseHistory returns aggregate DNS query history from Pi-hole's
+// long-term database using options as the time range.
 func (c *Client) GetDatabaseHistory(
+	ctx context.Context,
 	options DatabaseHistoryOptions,
 ) (*DatabaseHistoryResponse, error) {
 	values := url.Values{}
-	values.Set("from", strconv.FormatInt(options.From.Unix(), 10))
-	values.Set("until", strconv.FormatInt(options.Until.Unix(), 10))
 
-	endpoint := databaseHistoryEndpoint + "?" + values.Encode()
+	if !options.From.IsZero() {
+		values.Set("from", strconv.FormatInt(options.From.Unix(), 10))
+	}
+
+	if !options.Until.IsZero() {
+		values.Set("until", strconv.FormatInt(options.Until.Unix(), 10))
+	}
+
+	endpoint := databaseHistoryEndpoint
+
+	if encoded := values.Encode(); encoded != "" {
+		endpoint += "?" + encoded
+	}
 
 	var resp DatabaseHistoryResponse
 	if err := c.get(
+		ctx,
 		endpoint,
 		&resp,
 	); err != nil {
