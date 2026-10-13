@@ -4,8 +4,8 @@ A Go client for the Pi-hole v6 REST API.
 
 ## Status
 
-This is an initial release for Pi-hole v6. The API may change before v1.0.0,
-and automated testing against a live Pi-hole instance is not yet available.
+The public API may change before v1.0.0. Automated testing against a live
+Pi-hole instance is not yet available.
 
 ## Requirements
 
